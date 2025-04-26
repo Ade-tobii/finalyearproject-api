@@ -40,6 +40,65 @@ supabase_client = get_supabase_client()
 def index():
     return "Welcome to the Soil Sensor Monitoring API!"
 
+# GET endpoint to retrieve recommendations
+@app.route('/api/recommendations', methods=['GET'])
+def get_recommendations():
+    try:
+        response = supabase_client.table('recommendations').select('*').order('timestamp', desc=True).execute()
+        data = response.data
+        logger.info("Retrieved recommendations successfully")
+        return jsonify(data), 200
+    except Exception as e:
+        logger.error(f"Error retrieving recommendations: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+# POST endpoint to receive recommendation and severity
+@app.route('/api/recommendations', methods=['POST'])
+def receive_recommendation():
+    try:
+        data = request.get_json()
+        if not data:
+            logger.warning("No JSON data received")
+            return jsonify({"error": "No data provided"}), 400
+
+        required_fields = ["recommendation", "severity"]
+        if not all(field in data for field in required_fields):
+            missing = [field for field in required_fields if field not in data]
+            logger.warning(f"Missing fields: {missing}")
+            return jsonify({"error": f"Missing fields: {missing}"}), 400
+
+        recommendation = str(data["recommendation"])
+        severity = str(data["severity"]).lower()
+        
+        # Validate severity
+        valid_severities = ["high", "medium", "low"]
+        if severity not in valid_severities:
+            logger.warning(f"Invalid severity value: {severity}")
+            return jsonify({"error": f"Severity must be one of {valid_severities}"}), 400
+
+        recommendation_record = {
+            "recommendation": recommendation,
+            "severity": severity,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+        # Insert data into Supabase recommendations table
+        response = supabase_client.table('recommendations').insert(recommendation_record).execute()
+        inserted_id = response.data[0]['id']
+        logger.info(f"Recommendation inserted with ID: {inserted_id}")
+
+        return jsonify({
+            "message": "Recommendation received and stored successfully",
+            "id": str(inserted_id)
+        }), 201
+
+    except ValueError as ve:
+        logger.error(f"Invalid data format: {ve}")
+        return jsonify({"error": "Invalid data format"}), 400
+    except Exception as e:
+        logger.error(f"Error processing request: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 # POST endpoint to receive sensor data
 @app.route('/api/sensor_data', methods=['POST'])
 def receive_sensor_data():

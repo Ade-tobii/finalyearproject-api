@@ -108,7 +108,7 @@ def receive_sensor_data():
             logger.warning("No JSON data received")
             return jsonify({"error": "No data provided"}), 400
 
-        required_fields = ["soil_moisture", "soil_temperature", "soil_humidity"]
+        required_fields = ["soil_moisture", "soil_temperature", "soil_humidity", "soil_ph"]
         if not all(field in data for field in required_fields):
             missing = [field for field in required_fields if field not in data]
             logger.warning(f"Missing fields: {missing}")
@@ -117,8 +117,7 @@ def receive_sensor_data():
         soil_moisture = float(data["soil_moisture"])
         soil_temperature = float(data["soil_temperature"])
         soil_humidity = float(data["soil_humidity"])
-        # Generate random pH between 6.5 and 7.5
-        soil_ph = float(np.random.uniform(6.5, 7.5))
+        soil_ph = float(data["soil_ph"])
 
         sensor_record = {
             "soil_moisture": soil_moisture,

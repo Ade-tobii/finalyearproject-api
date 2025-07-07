@@ -119,8 +119,9 @@ def receive_sensor_data():
         soil_temperature = float(data["soil_temperature"])
         soil_humidity = float(data["soil_humidity"])
         # Generate random pH between 6.5 and 7.5
-        soil_ph = float(data["soil_ph"]) 
-        soil_data = {
+        soil_ph = float(data["soil_ph"])
+
+        sensor_record = {
             "soil_moisture": soil_moisture,
             "soil_temperature": soil_temperature,
             "soil_humidity": soil_humidity,

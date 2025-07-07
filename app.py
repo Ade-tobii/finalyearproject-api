@@ -102,7 +102,7 @@ def receive_recommendation():
 
 # POST endpoint to receive sensor data
 @app.route('/api/sensor_data', methods=['POST'])
-def receive_sensor_data():.
+def receive_sensor_data():
     try:
         data = request.get_json()
         if not data:
@@ -112,7 +112,7 @@ def receive_sensor_data():.
         required_fields = ["soil_moisture", "soil_temperature", "soil_humidity", "soil_ph"]
         if not all(field in data for field in required_fields):
             missing = [field for field in required_fields if field not in data]
-            logger.warning(f"Missing fields: {missing}")
+            logger.warning(f"Missing fields for fields: {missing}")
             return jsonify({"error": f"Missing fields: {missing}"}), 400
 
         soil_moisture = float(data["soil_moisture"])

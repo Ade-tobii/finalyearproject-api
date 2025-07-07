@@ -102,7 +102,7 @@ def receive_recommendation():
 
 # POST endpoint to receive sensor data
 @app.route('/api/sensor_data', methods=['POST'])
-def receive_sensor_data():
+def receive_sensor_data():.
     try:
         data = request.get_json()
         if not data:
@@ -121,7 +121,7 @@ def receive_sensor_data():
         # Generate random pH between 6.5 and 7.5
         soil_ph = float(data["soil_ph"])
 
-        sensor_record = {
+        soil_data = {
             "soil_moisture": soil_moisture,
             "soil_temperature": soil_temperature,
             "soil_humidity": soil_humidity,
